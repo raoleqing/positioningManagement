@@ -22,6 +22,31 @@ spring:
           min-idle: 0
           max-wait: -1ms
 
+# MyBatis Plus 配置
+mybatis-plus:
+  configuration:
+    # SQL 日志输出（开发环境启用，生产环境关闭）
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    # 驼峰命名自动映射
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      # 主键自增策略
+      id-type: auto
+
+# 微信支付配置（开发环境-模拟模式）
+wechat:
+  pay:
+    # 开发环境使用模拟模式，不走真实微信支付
+    mock: true
+    # 以下为真实环境配置（mock=false 时需填写）
+    app-id: wx0000000000000000
+    mch-id: "0000000000"
+    mch-serial-no: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+    api-v3-key: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+    private-key-path: /path/to/apiclient_key.pem
+    notify-url: http://localhost:8010/api/mobile/pay/callback
+
 logging:
   level:
     root: INFO
