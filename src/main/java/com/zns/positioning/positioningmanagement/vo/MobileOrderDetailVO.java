@@ -16,6 +16,7 @@ public class MobileOrderDetailVO {
     private Long deviceId;
     private String deviceNo;
     private String simCardNo;
+    private String iccid;
     private Long planId;
     private String planName;
     private BigDecimal planAmount;

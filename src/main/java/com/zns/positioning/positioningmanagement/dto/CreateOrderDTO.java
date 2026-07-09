@@ -31,6 +31,10 @@ public class CreateOrderDTO {
     /** SIM卡号 */
     private String simCardNo;
 
+    /** ICCID（SIM卡唯一标识，运营商充值必传） */
+    @NotBlank(message = "ICCID不能为空")
+    private String iccid;
+
     /** 套餐ID */
     @NotNull(message = "套餐ID不能为空")
     private Long planId;

@@ -28,6 +28,9 @@ public class RechargeOrder {
 
     private String simCardNo;
 
+    /** ICCID（SIM卡唯一标识，运营商充值必传） */
+    private String iccid;
+
     /** 套餐ID */
     private Long planId;
 

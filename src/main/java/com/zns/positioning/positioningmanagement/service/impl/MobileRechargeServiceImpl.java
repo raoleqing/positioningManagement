@@ -16,6 +16,7 @@ import com.zns.positioning.positioningmanagement.common.enums.OperationLogTypeEn
 import com.zns.positioning.positioningmanagement.common.enums.NotifyStatusEnum;
 import com.zns.positioning.positioningmanagement.common.enums.PayStatusEnum;
 import com.zns.positioning.positioningmanagement.common.enums.RechargeStatusEnum;
+import com.zns.positioning.positioningmanagement.common.util.OperatorApiClient;
 import com.zns.positioning.positioningmanagement.config.WechatPayConfig;
 import com.zns.positioning.positioningmanagement.dto.CreateOrderDTO;
 import com.zns.positioning.positioningmanagement.dto.MobileOrderQueryDTO;
@@ -43,16 +44,69 @@ public class MobileRechargeServiceImpl implements MobileRechargeService {
     private final PackagePlanMapper packagePlanMapper;
     private final OperationLogService operationLogService;
     private final WechatPayConfig wechatPayConfig;
+    private final OperatorApiClient operatorApiClient;
 
     @Autowired(required = false)
     private Config wechatPaySdkConfig;
     private JsapiService jsapiService;
     private JsapiServiceExtension jsapiServiceExtension;
 
+    /**
+     * 物联卡状态码 -> 中文说明映射
+     */
+    private static final Map<String, String> STATUS_MAP = new HashMap<>();
+    static {
+        STATUS_MAP.put("-1", "错误数据");
+        STATUS_MAP.put("1", "可激活");
+        STATUS_MAP.put("2", "已激活");
+        STATUS_MAP.put("3", "已停用");
+        STATUS_MAP.put("4", "违章停机");
+        STATUS_MAP.put("5", "已失效");
+        STATUS_MAP.put("6", "可测试");
+        STATUS_MAP.put("7", "运营商注销");
+        STATUS_MAP.put("8", "用户注销");
+        STATUS_MAP.put("9", "欠停");
+        STATUS_MAP.put("10", "挂失");
+        STATUS_MAP.put("11", "库存");
+        STATUS_MAP.put("12", "故障卡");
+        STATUS_MAP.put("13", "已断网");
+        STATUS_MAP.put("14", "未实名停机");
+        STATUS_MAP.put("15", "预注销");
+        STATUS_MAP.put("16", "超量停机");
+        STATUS_MAP.put("17", "停机保号");
+        STATUS_MAP.put("18", "已锁定");
+        STATUS_MAP.put("19", "部分停用-聚合卡");
+        STATUS_MAP.put("20", "未实名关闭网络");
+    }
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public MobileOrderDetailVO createOrder(CreateOrderDTO dto) {
-        // 根据套餐ID查询套餐信息
+
+        // 1. 查询当前号码是否可用
+        JSONObject cardStatus = operatorApiClient.queryCardStatus(dto.getIccid());
+        String code = cardStatus.getStr("code");
+        if (!"0".equals(code) && !"SUCCESS".equalsIgnoreCase(code)) {
+            String msg = cardStatus.getStr("msg", "号码状态查询失败");
+            log.warn("号码不可用, iccid={}, code={}, msg={}", dto.getIccid(), code, msg);
+            throw new RuntimeException("号码状态异常: " + msg);
+        }
+        JSONObject data = cardStatus.getJSONObject("data");
+        if (data == null) {
+            log.warn("号码状态查询返回数据为空, iccid={}", dto.getIccid());
+            throw new RuntimeException("号码状态查询失败，未获取到卡信息");
+        }
+        String status = data.getStr("code");
+        // 只有1，2，3，6，11，13，14，16，17，20可用
+        Set<String> availableStatuses = new HashSet<>(Arrays.asList(
+                "1", "2", "3", "6", "11", "13", "14", "16", "17", "20"));
+        if (!availableStatuses.contains(status)) {
+            String statusDesc = STATUS_MAP.getOrDefault(status, "未知状态（" + status + "）");
+            log.warn("号码不可用, iccid={}, status={}, desc={}", dto.getIccid(), status, statusDesc);
+            throw new RuntimeException("当前号码状态不可用（" + statusDesc + "），无法创建订单");
+        }
+
+        // 2. 根据套餐ID查询套餐信息
         PackagePlan plan = packagePlanMapper.selectById(dto.getPlanId());
         if (plan == null) {
             throw new RuntimeException("套餐不存在");
@@ -72,6 +126,7 @@ public class MobileRechargeServiceImpl implements MobileRechargeService {
         order.setDeviceId(dto.getDeviceId());
         order.setDeviceNo(dto.getDeviceNo());
         order.setSimCardNo(dto.getSimCardNo());
+        order.setIccid(dto.getIccid());
         order.setPlanId(plan.getId());
         order.setPlanName(plan.getPlanName());
         order.setPlanAmount(plan.getPrice());
@@ -302,9 +357,13 @@ public class MobileRechargeServiceImpl implements MobileRechargeService {
                 order.getId(), order.getOrderNo(), order.getDeviceNo(),
                 "INFO", "开始调用运营商充值", "订单号: " + order.getOrderNo(), "SYSTEM");
 
+        // 调用运营商充值API
         try {
-            boolean success = simulateOperatorRecharge(order);
-            if (success) {
+            // 使用卡商API进行真实充值
+            JSONObject result = operatorApiClient.recharge(order.getIccid(),
+                    String.valueOf(order.getPlanId()), order.getPlanAmount());
+            String code = result.getStr("code");
+            if ("0".equals(code) || "SUCCESS".equalsIgnoreCase(code)) {
                 order.setRechargeStatus(RechargeStatusEnum.SUCCESS.name());
                 order.setRechargeTime(LocalDateTime.now());
                 rechargeOrderMapper.updateById(order);
@@ -316,13 +375,14 @@ public class MobileRechargeServiceImpl implements MobileRechargeService {
                         order.getId(), order.getOrderNo(), order.getDeviceNo(),
                         "INFO", "充值成功", "运营商返回成功, 设备: " + order.getDeviceNo(), "SYSTEM");
             } else {
+                String errMsg = result.getStr("msg", "运营商API返回失败");
                 order.setRechargeStatus(RechargeStatusEnum.FAILED.name());
-                order.setErrorMsg("运营商API返回失败");
+                order.setErrorMsg(errMsg);
                 rechargeOrderMapper.updateById(order);
 
                 operationLogService.saveLog(OperationLogTypeEnum.ORDER_RECHARGE_RESULT,
                         order.getId(), order.getOrderNo(), order.getDeviceNo(),
-                        "ERROR", "充值失败", "运营商API返回失败", "SYSTEM");
+                        "ERROR", "充值失败", "code=" + code + ", msg=" + errMsg, "SYSTEM");
             }
         } catch (Exception e) {
             log.error("运营商充值异常, orderNo={}", order.getOrderNo(), e);
@@ -387,9 +447,5 @@ public class MobileRechargeServiceImpl implements MobileRechargeService {
         }
     }
 
-    private boolean simulateOperatorRecharge(RechargeOrder order) {
-        log.info("[模拟] 调用运营商API充值, orderNo={}, deviceId={}, amount={}",
-                order.getOrderNo(), order.getDeviceId(), order.getPlanAmount());
-        return true;
-    }
+
 }

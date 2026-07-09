@@ -34,6 +34,13 @@ mybatis-plus:
       # 主键自增策略
       id-type: auto
 
+# 物联云平台配置
+iot:
+  platform:
+    app-id: ${IOT_APP_ID:zx20260707155447}
+    app-key: ${IOT_APP_KEY:777fcc695baf9efec8b2b31288bb9be5}
+    base-url: ${IOT_BASE_URL:http://zy.zyllz.com:8898/iot/api}
+
 # 微信支付配置
 wechat:
   pay:

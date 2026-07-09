@@ -61,6 +61,7 @@
         <el-table-column prop="deviceId" label="设备ID" width="80" />
         <el-table-column prop="deviceNo" label="设备编号" width="140" show-overflow-tooltip />
         <el-table-column prop="simCardNo" label="SIM卡号" width="140" show-overflow-tooltip />
+        <el-table-column prop="iccid" label="ICCID" width="180" show-overflow-tooltip />
         <el-table-column prop="userId" label="用户ID" width="80" />
         <el-table-column prop="userName" label="用户名" width="100" />
         <el-table-column prop="planName" label="套餐名称" width="140" show-overflow-tooltip />

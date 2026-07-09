@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS `recharge_order` (
     `device_id` BIGINT NOT NULL COMMENT '设备ID',
     `device_no` VARCHAR(64) DEFAULT NULL COMMENT '设备编号',
     `sim_card_no` VARCHAR(32) DEFAULT NULL COMMENT 'SIM卡号',
+    `iccid` VARCHAR(32) DEFAULT NULL COMMENT 'ICCID（SIM卡唯一标识，运营商充值必传）',
     `plan_id` BIGINT DEFAULT NULL COMMENT '套餐ID',
     `plan_name` VARCHAR(100) DEFAULT NULL COMMENT '套餐名称（冗余存储，快照）',
     `plan_amount` DECIMAL(10,2) NOT NULL COMMENT '套餐金额(元)',
