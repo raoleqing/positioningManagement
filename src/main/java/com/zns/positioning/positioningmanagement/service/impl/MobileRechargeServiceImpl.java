@@ -12,8 +12,8 @@ import com.wechat.pay.java.service.payments.jsapi.JsapiService;
 import com.wechat.pay.java.service.payments.jsapi.JsapiServiceExtension;
 import com.wechat.pay.java.service.payments.jsapi.model.*;
 import com.wechat.pay.java.service.payments.model.Transaction;
+import com.zns.positioning.positioningmanagement.common.enums.OperationLogTypeEnum;
 import com.zns.positioning.positioningmanagement.common.enums.NotifyStatusEnum;
-import com.zns.positioning.positioningmanagement.common.enums.OrderLogTypeEnum;
 import com.zns.positioning.positioningmanagement.common.enums.PayStatusEnum;
 import com.zns.positioning.positioningmanagement.common.enums.RechargeStatusEnum;
 import com.zns.positioning.positioningmanagement.config.WechatPayConfig;
@@ -22,18 +22,16 @@ import com.zns.positioning.positioningmanagement.dto.MobileOrderQueryDTO;
 import com.zns.positioning.positioningmanagement.entity.*;
 import com.zns.positioning.positioningmanagement.mapper.*;
 import com.zns.positioning.positioningmanagement.service.MobileRechargeService;
-import com.zns.positioning.positioningmanagement.vo.DeviceSimplifyVO;
-import com.zns.positioning.positioningmanagement.vo.DeviceValidityVO;
+import com.zns.positioning.positioningmanagement.service.OperationLogService;
 import com.zns.positioning.positioningmanagement.vo.MobileOrderDetailVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @Slf4j
@@ -42,19 +40,27 @@ import java.util.*;
 public class MobileRechargeServiceImpl implements MobileRechargeService {
 
     private final RechargeOrderMapper rechargeOrderMapper;
-    private final OrderLogMapper orderLogMapper;
-    private final DeviceValidityMapper deviceValidityMapper;
-    private final PreDepositAccountMapper preDepositAccountMapper;
-    private final PreDepositRecordMapper preDepositRecordMapper;
+    private final PackagePlanMapper packagePlanMapper;
+    private final OperationLogService operationLogService;
     private final WechatPayConfig wechatPayConfig;
 
-    private final Config wechatPaySdkConfig;
+    @Autowired(required = false)
+    private Config wechatPaySdkConfig;
     private JsapiService jsapiService;
     private JsapiServiceExtension jsapiServiceExtension;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public MobileOrderDetailVO createOrder(CreateOrderDTO dto) {
+        // 根据套餐ID查询套餐信息
+        PackagePlan plan = packagePlanMapper.selectById(dto.getPlanId());
+        if (plan == null) {
+            throw new RuntimeException("套餐不存在");
+        }
+        if (plan.getStatus() == null || plan.getStatus() != 1) {
+            throw new RuntimeException("该套餐已停用，请选择其他套餐");
+        }
+
         // 生成订单号：REC + 年月日 + 6位随机数
         String orderNo = "REC" + DateUtil.format(LocalDateTime.now(), "yyyyMMddHHmmss")
                 + IdUtil.fastSimpleUUID().substring(0, 6);
@@ -66,8 +72,10 @@ public class MobileRechargeServiceImpl implements MobileRechargeService {
         order.setDeviceId(dto.getDeviceId());
         order.setDeviceNo(dto.getDeviceNo());
         order.setSimCardNo(dto.getSimCardNo());
-        order.setAmount(dto.getAmount());
-        order.setYears(dto.getYears());
+        order.setPlanId(plan.getId());
+        order.setPlanName(plan.getPlanName());
+        order.setPlanAmount(plan.getPrice());
+        order.setPlanYears(plan.getYears());
         order.setPayStatus(PayStatusEnum.PENDING.name());
         order.setRechargeStatus(RechargeStatusEnum.PENDING.name());
         order.setNotifyStatus(NotifyStatusEnum.PENDING.name());
@@ -77,13 +85,16 @@ public class MobileRechargeServiceImpl implements MobileRechargeService {
         rechargeOrderMapper.insert(order);
 
         // 记录创建日志
-        saveLog(order, OrderLogTypeEnum.OTHER, "INFO",
-                "创建充值订单",
-                "用户: " + dto.getUserName() + ", 金额: " + dto.getAmount()
-                        + ", 年限: " + dto.getYears() + "年, 设备: " + dto.getDeviceNo(),
+        operationLogService.saveLog(OperationLogTypeEnum.ORDER_CREATE,
+                order.getId(), order.getOrderNo(), order.getDeviceNo(),
+                "INFO", "创建充值订单",
+                "用户: " + dto.getUserName() + ", 套餐: " + plan.getPlanName()
+                        + ", 金额: " + plan.getPrice() + ", 年限: " + plan.getYears()
+                        + "年, 设备: " + dto.getDeviceNo(),
                 dto.getUserName());
 
-        log.info("创建充值订单成功, orderNo={}, userId={}, amount={}", orderNo, dto.getUserId(), dto.getAmount());
+        log.info("创建充值订单成功, orderNo={}, userId={}, planId={}, planName={}, amount={}",
+                orderNo, dto.getUserId(), plan.getId(), plan.getPlanName(), plan.getPrice());
 
         MobileOrderDetailVO vo = new MobileOrderDetailVO();
         BeanUtil.copyProperties(order, vo);
@@ -113,8 +124,10 @@ public class MobileRechargeServiceImpl implements MobileRechargeService {
             log.info("[模拟模式] 微信统一下单成功, orderNo={}, mockPrepayId=mock_{}",
                     order.getOrderNo(), order.getOrderNo());
 
-            saveLog(order, OrderLogTypeEnum.PAY_CALLBACK, "INFO",
-                    "模拟微信统一下单", "生成模拟prepay_id: mock_" + order.getOrderNo(), "SYSTEM");
+            operationLogService.saveLog(OperationLogTypeEnum.ORDER_PAY_CALLBACK,
+                    order.getId(), order.getOrderNo(), order.getDeviceNo(),
+                    "INFO", "模拟微信统一下单",
+                    "生成模拟prepay_id: mock_" + order.getOrderNo(), "SYSTEM");
 
             return mockParams;
         }
@@ -138,7 +151,7 @@ public class MobileRechargeServiceImpl implements MobileRechargeService {
             prepayRequest.setNotifyUrl(wechatPayConfig.getNotifyUrl());
 
             Amount amount = new Amount();
-            amount.setTotal(order.getAmount().multiply(new BigDecimal("100")).intValue()); // 分
+            amount.setTotal(order.getPlanAmount().multiply(new BigDecimal("100")).intValue()); // 分
             amount.setCurrency("CNY");
             prepayRequest.setAmount(amount);
 
@@ -149,8 +162,9 @@ public class MobileRechargeServiceImpl implements MobileRechargeService {
             PrepayResponse response = jsapiService.prepay(prepayRequest);
             log.info("微信统一下单成功, orderNo={}, prepayId={}", order.getOrderNo(), response.getPrepayId());
 
-            saveLog(order, OrderLogTypeEnum.PAY_CALLBACK, "INFO",
-                    "微信统一下单", "prepay_id: " + response.getPrepayId(), "SYSTEM");
+            operationLogService.saveLog(OperationLogTypeEnum.ORDER_PAY_CALLBACK,
+                    order.getId(), order.getOrderNo(), order.getDeviceNo(),
+                    "INFO", "微信统一下单", "prepay_id: " + response.getPrepayId(), "SYSTEM");
 
             // 组装小程序调起支付参数
             Map<String, String> params = new LinkedHashMap<>();
@@ -165,8 +179,9 @@ public class MobileRechargeServiceImpl implements MobileRechargeService {
 
         } catch (Exception e) {
             log.error("微信统一下单失败, orderNo={}", order.getOrderNo(), e);
-            saveLog(order, OrderLogTypeEnum.PAY_CALLBACK, "ERROR",
-                    "微信统一下单失败", e.getMessage(), "SYSTEM");
+            operationLogService.saveLog(OperationLogTypeEnum.ORDER_PAY_CALLBACK,
+                    order.getId(), order.getOrderNo(), order.getDeviceNo(),
+                    "ERROR", "微信统一下单失败", e.getMessage(), "SYSTEM");
             throw new RuntimeException("微信统一下单失败: " + e.getMessage());
         }
     }
@@ -259,9 +274,10 @@ public class MobileRechargeServiceImpl implements MobileRechargeService {
         order.setPayTime(LocalDateTime.now());
         rechargeOrderMapper.updateById(order);
 
-        saveLog(order, OrderLogTypeEnum.PAY_CALLBACK, "INFO",
-                "支付成功",
-                "微信交易号: " + transactionId + ", 金额: " + order.getAmount(), "SYSTEM");
+        operationLogService.saveLog(OperationLogTypeEnum.ORDER_PAY_CALLBACK,
+                order.getId(), order.getOrderNo(), order.getDeviceNo(),
+                "INFO", "支付成功",
+                "微信交易号: " + transactionId + ", 金额: " + order.getPlanAmount(), "SYSTEM");
 
         log.info("支付回调处理成功, orderNo={}, transactionId={}", orderNo, transactionId);
 
@@ -282,8 +298,9 @@ public class MobileRechargeServiceImpl implements MobileRechargeService {
         order.setRechargeStatus(RechargeStatusEnum.RETRYING.name());
         rechargeOrderMapper.updateById(order);
 
-        saveLog(order, OrderLogTypeEnum.RECHARGE_CALL, "INFO",
-                "开始调用运营商充值", "订单号: " + order.getOrderNo(), "SYSTEM");
+        operationLogService.saveLog(OperationLogTypeEnum.ORDER_RECHARGE_CALL,
+                order.getId(), order.getOrderNo(), order.getDeviceNo(),
+                "INFO", "开始调用运营商充值", "订单号: " + order.getOrderNo(), "SYSTEM");
 
         try {
             boolean success = simulateOperatorRecharge(order);
@@ -292,24 +309,20 @@ public class MobileRechargeServiceImpl implements MobileRechargeService {
                 order.setRechargeTime(LocalDateTime.now());
                 rechargeOrderMapper.updateById(order);
 
-                // 扣减预存款
-                updatePreDepositAccount(order);
-
-                // 更新设备有效期
-                updateDeviceValidityAfterRecharge(order);
-
                 // 通知客户系统
                 notifyCustomerSystem(order);
 
-                saveLog(order, OrderLogTypeEnum.RECHARGE_RESULT, "INFO",
-                        "充值成功", "运营商返回成功, 设备: " + order.getDeviceNo(), "SYSTEM");
+                operationLogService.saveLog(OperationLogTypeEnum.ORDER_RECHARGE_RESULT,
+                        order.getId(), order.getOrderNo(), order.getDeviceNo(),
+                        "INFO", "充值成功", "运营商返回成功, 设备: " + order.getDeviceNo(), "SYSTEM");
             } else {
                 order.setRechargeStatus(RechargeStatusEnum.FAILED.name());
                 order.setErrorMsg("运营商API返回失败");
                 rechargeOrderMapper.updateById(order);
 
-                saveLog(order, OrderLogTypeEnum.RECHARGE_RESULT, "ERROR",
-                        "充值失败", "运营商API返回失败", "SYSTEM");
+                operationLogService.saveLog(OperationLogTypeEnum.ORDER_RECHARGE_RESULT,
+                        order.getId(), order.getOrderNo(), order.getDeviceNo(),
+                        "ERROR", "充值失败", "运营商API返回失败", "SYSTEM");
             }
         } catch (Exception e) {
             log.error("运营商充值异常, orderNo={}", order.getOrderNo(), e);
@@ -317,8 +330,9 @@ public class MobileRechargeServiceImpl implements MobileRechargeService {
             order.setErrorMsg("充值异常: " + e.getMessage());
             rechargeOrderMapper.updateById(order);
 
-            saveLog(order, OrderLogTypeEnum.RECHARGE_RESULT, "ERROR",
-                    "充值异常", e.getMessage(), "SYSTEM");
+            operationLogService.saveLog(OperationLogTypeEnum.ORDER_RECHARGE_RESULT,
+                    order.getId(), order.getOrderNo(), order.getDeviceNo(),
+                    "ERROR", "充值异常", e.getMessage(), "SYSTEM");
         }
     }
 
@@ -351,79 +365,7 @@ public class MobileRechargeServiceImpl implements MobileRechargeService {
         return voPage;
     }
 
-    @Override
-    public DeviceSimplifyVO getDeviceValidity(Long deviceId) {
-        DeviceValidity validity = deviceValidityMapper.selectByDeviceId(deviceId);
-        if (validity == null) {
-            return null;
-        }
-        DeviceSimplifyVO vo = new DeviceSimplifyVO();
-        BeanUtil.copyProperties(validity, vo);
-        if (validity.getValidTo() != null) {
-            vo.setRemainingDays(ChronoUnit.DAYS.between(LocalDate.now(), validity.getValidTo()));
-        }
-        return vo;
-    }
-
     // ========== 私有辅助方法 ==========
-
-    private void updatePreDepositAccount(RechargeOrder order) {
-        PreDepositAccount account = preDepositAccountMapper.selectById(1);
-        if (account == null) return;
-
-        BigDecimal beforeBalance = account.getBalance();
-        account.setBalance(account.getBalance().subtract(order.getAmount()));
-        account.setTotalConsume(account.getTotalConsume().add(order.getAmount()));
-        if (account.getBalance().compareTo(new BigDecimal("500")) < 0) {
-            account.setStatus("LOW_BALANCE");
-        }
-        preDepositAccountMapper.updateById(account);
-
-        PreDepositRecord record = new PreDepositRecord();
-        record.setAccountId(account.getId());
-        record.setOrderId(order.getId());
-        record.setOrderNo(order.getOrderNo());
-        record.setType("CONSUME");
-        record.setAmount(order.getAmount());
-        record.setBalanceBefore(beforeBalance);
-        record.setBalanceAfter(account.getBalance());
-        record.setRemark("小程序充值消耗: 设备" + order.getDeviceNo());
-        preDepositRecordMapper.insert(record);
-    }
-
-    private void updateDeviceValidityAfterRecharge(RechargeOrder order) {
-        DeviceValidity validity = deviceValidityMapper.selectByDeviceId(order.getDeviceId());
-        LocalDate now = LocalDate.now();
-
-        if (validity == null) {
-            validity = new DeviceValidity();
-            validity.setDeviceId(order.getDeviceId());
-            validity.setDeviceNo(order.getDeviceNo());
-            validity.setSimCardNo(order.getSimCardNo());
-            validity.setValidFrom(now);
-            validity.setValidTo(now.plusYears(order.getYears()));
-            validity.setLastRechargeTime(LocalDateTime.now());
-            validity.setTotalRechargeAmount(order.getAmount());
-            validity.setStatus("NORMAL");
-            deviceValidityMapper.insert(validity);
-        } else {
-            LocalDate newValidTo;
-            if (validity.getValidTo() != null && validity.getValidTo().isAfter(now)) {
-                newValidTo = validity.getValidTo().plusYears(order.getYears());
-            } else {
-                newValidTo = now.plusYears(order.getYears());
-            }
-            validity.setValidTo(newValidTo);
-            validity.setValidFrom(validity.getValidFrom() != null ? validity.getValidFrom() : now);
-            validity.setLastRechargeTime(LocalDateTime.now());
-            validity.setTotalRechargeAmount(
-                    validity.getTotalRechargeAmount() == null
-                            ? order.getAmount()
-                            : validity.getTotalRechargeAmount().add(order.getAmount()));
-            validity.setStatus("NORMAL");
-            deviceValidityMapper.updateById(validity);
-        }
-    }
 
     private void notifyCustomerSystem(RechargeOrder order) {
         try {
@@ -432,35 +374,22 @@ public class MobileRechargeServiceImpl implements MobileRechargeService {
             order.setNotifyTime(LocalDateTime.now());
             rechargeOrderMapper.updateById(order);
 
-            saveLog(order, OrderLogTypeEnum.NOTIFY_CUSTOMER, "INFO",
-                    "通知客户系统成功", "设备: " + order.getDeviceId(), "SYSTEM");
+            operationLogService.saveLog(OperationLogTypeEnum.ORDER_NOTIFY_CUSTOMER,
+                    order.getId(), order.getOrderNo(), order.getDeviceNo(),
+                    "INFO", "通知客户系统成功", "设备: " + order.getDeviceId(), "SYSTEM");
         } catch (Exception e) {
             log.error("通知客户系统失败", e);
             order.setNotifyStatus("FAILED");
             rechargeOrderMapper.updateById(order);
-            saveLog(order, OrderLogTypeEnum.NOTIFY_CUSTOMER, "ERROR",
-                    "通知客户系统失败", e.getMessage(), "SYSTEM");
+            operationLogService.saveLog(OperationLogTypeEnum.ORDER_NOTIFY_CUSTOMER,
+                    order.getId(), order.getOrderNo(), order.getDeviceNo(),
+                    "ERROR", "通知客户系统失败", e.getMessage(), "SYSTEM");
         }
     }
 
     private boolean simulateOperatorRecharge(RechargeOrder order) {
         log.info("[模拟] 调用运营商API充值, orderNo={}, deviceId={}, amount={}",
-                order.getOrderNo(), order.getDeviceId(), order.getAmount());
+                order.getOrderNo(), order.getDeviceId(), order.getPlanAmount());
         return true;
-    }
-
-    private void saveLog(RechargeOrder order, OrderLogTypeEnum logType, String level,
-                         String title, String content, String operator) {
-        OrderLog logEntry = new OrderLog();
-        if (order != null) {
-            logEntry.setOrderId(order.getId());
-            logEntry.setOrderNo(order.getOrderNo());
-        }
-        logEntry.setLogType(logType.name());
-        logEntry.setLogLevel(level);
-        logEntry.setTitle(title);
-        logEntry.setContent(content);
-        logEntry.setOperator(operator);
-        orderLogMapper.insert(logEntry);
     }
 }

@@ -3,6 +3,7 @@ package com.zns.positioning.positioningmanagement.config;
 import com.wechat.pay.java.core.Config;
 import com.wechat.pay.java.core.RSAAutoCertificateConfig;
 import lombok.Data;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,11 +39,13 @@ public class WechatPayConfig {
 
     /**
      * 微信支付核心配置（非模拟模式时启用）
+     * 需要设置环境变量：WECHAT_MCH_ID, WECHAT_MCH_SERIAL_NO, WECHAT_API_V3_KEY, WECHAT_PRIVATE_KEY_PATH
      */
     @Bean
+    @ConditionalOnExpression("!${wechat.pay.mock:false} and '${wechat.pay.privateKeyPath:}' != ''")
     public Config wechatPaySdkConfig() {
-        if (mock) {
-            return null; // 模拟模式，无需SDK配置
+        if (privateKeyPath == null || privateKeyPath.isEmpty()) {
+            throw new IllegalStateException("微信支付私钥路径未配置，请设置 wechat.pay.privateKeyPath 或启用模拟模式 wechat.pay.mock=true");
         }
         return new RSAAutoCertificateConfig.Builder()
                 .merchantId(mchId)

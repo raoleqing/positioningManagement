@@ -5,32 +5,21 @@ const routes = [
   {
     path: '/',
     component: Layout,
-    redirect: '/order',
+    redirect: '/package-plan',
     children: [
+      {
+        path: 'package-plan',
+        name: 'PackagePlanList',
+        component: () => import('@/views/PackagePlan.vue'),
+        meta: { title: '套餐管理' }
+      },
       {
         path: 'order',
         name: 'OrderList',
         component: () => import('@/views/RechargeOrder.vue'),
         meta: { title: '订单管理' }
-      },
-      {
-        path: 'validity',
-        name: 'DeviceValidity',
-        component: () => import('@/views/DeviceValidity.vue'),
-        meta: { title: '设备有效期管理' }
-      },
-      {
-        path: 'predeposit',
-        name: 'PreDeposit',
-        component: () => import('@/views/PreDeposit.vue'),
-        meta: { title: '预存款管理' }
-      },
-      {
-        path: 'reconciliation',
-        name: 'Reconciliation',
-        component: () => import('@/views/Reconciliation.vue'),
-        meta: { title: '对账管理' }
       }
+
     ]
   }
 ]

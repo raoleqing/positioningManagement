@@ -31,13 +31,9 @@ public class CreateOrderDTO {
     /** SIM卡号 */
     private String simCardNo;
 
-    /** 充值金额 */
-    @NotNull(message = "充值金额不能为空")
-    private BigDecimal amount;
-
-    /** 充值年限 */
-    @NotNull(message = "充值年限不能为空")
-    private Integer years;
+    /** 套餐ID */
+    @NotNull(message = "套餐ID不能为空")
+    private Long planId;
 
     /** 备注 */
     private String remark;

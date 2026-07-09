@@ -2,14 +2,10 @@ package com.zns.positioning.positioningmanagement.controller.admin;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zns.positioning.positioningmanagement.common.R;
-import com.zns.positioning.positioningmanagement.dto.DeviceValidityUpdateDTO;
 import com.zns.positioning.positioningmanagement.dto.OrderQueryDTO;
-import com.zns.positioning.positioningmanagement.entity.OrderLog;
-import com.zns.positioning.positioningmanagement.entity.ValidityUpdateLog;
 import com.zns.positioning.positioningmanagement.service.RechargeOrderService;
-import com.zns.positioning.positioningmanagement.vo.DeviceValidityVO;
+import com.zns.positioning.positioningmanagement.vo.OperationLogVO;
 import com.zns.positioning.positioningmanagement.vo.OrderVO;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,7 +26,7 @@ public class RechargeOrderController {
 
     /** 查看订单详细日志 */
     @GetMapping("/{orderId}/logs")
-    public R<List<OrderLog>> getOrderLogs(@PathVariable Long orderId) {
+    public R<List<OperationLogVO>> getOrderLogs(@PathVariable Long orderId) {
         return R.ok(rechargeOrderService.getOrderLogs(orderId));
     }
 
@@ -46,25 +42,5 @@ public class RechargeOrderController {
     public R<Integer> retryAll(@RequestParam String operator) {
         int count = rechargeOrderService.retryAllFailedOrders(operator);
         return R.ok("成功重试 " + count + " 笔订单", count);
-    }
-
-    /** 手动修正设备有效期 */
-    @PostMapping("/validity/update")
-    public R<Void> updateDeviceValidity(@Valid @RequestBody DeviceValidityUpdateDTO dto,
-                                         @RequestParam String operator) {
-        rechargeOrderService.updateDeviceValidity(dto, operator);
-        return R.ok();
-    }
-
-    /** 查看设备有效期修正日志 */
-    @GetMapping("/validity/{deviceId}/logs")
-    public R<List<ValidityUpdateLog>> getValidityLogs(@PathVariable Long deviceId) {
-        return R.ok(rechargeOrderService.getValidityUpdateLogs(deviceId));
-    }
-
-    /** 获取设备有效期 */
-    @GetMapping("/validity/{deviceId}")
-    public R<DeviceValidityVO> getDeviceValidity(@PathVariable Long deviceId) {
-        return R.ok(rechargeOrderService.getDeviceValidity(deviceId));
     }
 }

@@ -12,22 +12,15 @@
         text-color="#bfcbd9"
         active-text-color="#409EFF"
       >
+        <el-menu-item index="/package-plan">
+          <el-icon><Collection /></el-icon>
+          <span>套餐管理</span>
+        </el-menu-item>
         <el-menu-item index="/order">
           <el-icon><Document /></el-icon>
           <span>订单管理</span>
         </el-menu-item>
-        <el-menu-item index="/validity">
-          <el-icon><Timer /></el-icon>
-          <span>设备有效期管理</span>
-        </el-menu-item>
-        <el-menu-item index="/predeposit">
-          <el-icon><Wallet /></el-icon>
-          <span>预存款管理</span>
-        </el-menu-item>
-        <el-menu-item index="/reconciliation">
-          <el-icon><Notebook /></el-icon>
-          <span>对账管理</span>
-        </el-menu-item>
+
       </el-menu>
     </el-aside>
     <el-container>

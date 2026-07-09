@@ -63,8 +63,9 @@
         <el-table-column prop="simCardNo" label="SIM卡号" width="140" show-overflow-tooltip />
         <el-table-column prop="userId" label="用户ID" width="80" />
         <el-table-column prop="userName" label="用户名" width="100" />
-        <el-table-column prop="amount" label="金额(元)" width="100" />
-        <el-table-column prop="years" label="年限" width="70" />
+        <el-table-column prop="planName" label="套餐名称" width="140" show-overflow-tooltip />
+        <el-table-column prop="planAmount" label="套餐金额(元)" width="100" />
+        <el-table-column prop="planYears" label="年数" width="70" />
         <el-table-column label="支付状态" width="100">
           <template #default="{ row }">
             <el-tag :type="payStatusTag(row.payStatus)" size="small">{{ payStatusText(row.payStatus) }}</el-tag>

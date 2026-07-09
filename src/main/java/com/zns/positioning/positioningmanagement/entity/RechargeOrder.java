@@ -28,9 +28,17 @@ public class RechargeOrder {
 
     private String simCardNo;
 
-    private BigDecimal amount;
+    /** 套餐ID */
+    private Long planId;
 
-    private Integer years;
+    /** 套餐名称（冗余存储，创建订单时快照） */
+    private String planName;
+
+    /** 套餐金额(元) */
+    private BigDecimal planAmount;
+
+    /** 套餐年数 */
+    private Integer planYears;
 
     private String payStatus;
 
@@ -46,6 +54,7 @@ public class RechargeOrder {
 
     private LocalDateTime notifyTime;
 
+    /** 重试次数 */
     private Integer retryCount;
 
     private Integer maxRetryCount;

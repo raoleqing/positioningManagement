@@ -91,15 +91,6 @@ public class MobileRechargeController {
         return R.ok(mobileRechargeService.queryUserOrders(dto));
     }
 
-    /**
-     * 获取设备有效期信息
-     * GET /api/mobile/device/{deviceId}/validity
-     */
-    @GetMapping("/device/{deviceId}/validity")
-    public R<?> getDeviceValidity(@PathVariable Long deviceId) {
-        return R.ok(mobileRechargeService.getDeviceValidity(deviceId));
-    }
-
     // ===================== 模拟支付回调（仅开发环境） =====================
 
     /**

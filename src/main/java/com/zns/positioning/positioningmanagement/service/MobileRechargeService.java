@@ -3,7 +3,6 @@ package com.zns.positioning.positioningmanagement.service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zns.positioning.positioningmanagement.dto.CreateOrderDTO;
 import com.zns.positioning.positioningmanagement.dto.MobileOrderQueryDTO;
-import com.zns.positioning.positioningmanagement.vo.DeviceSimplifyVO;
 import com.zns.positioning.positioningmanagement.vo.MobileOrderDetailVO;
 
 import java.util.Map;
@@ -33,9 +32,4 @@ public interface MobileRechargeService {
      * 用户充值记录分页
      */
     Page<MobileOrderDetailVO> queryUserOrders(MobileOrderQueryDTO dto);
-
-    /**
-     * 获取设备有效期信息
-     */
-    DeviceSimplifyVO getDeviceValidity(Long deviceId);
 }

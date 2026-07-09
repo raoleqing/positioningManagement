@@ -8,7 +8,6 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -40,9 +39,4 @@ public interface RechargeOrderMapper extends BaseMapper<RechargeOrder> {
     @Select("SELECT * FROM recharge_order WHERE recharge_status = 'FAILED' AND retry_count < max_retry_count AND deleted = 0")
     List<RechargeOrder> selectFailedRetryableOrders();
 
-    @Select("SELECT SUM(amount) FROM recharge_order WHERE recharge_status = 'SUCCESS' AND recharge_time BETWEEN #{startTime} AND #{endTime} AND deleted = 0")
-    BigDecimal sumSuccessAmountBetween(@Param("startTime") LocalDateTime startTime, @Param("endTime") LocalDateTime endTime);
-
-    @Select("SELECT * FROM recharge_order WHERE recharge_status = 'SUCCESS' AND recharge_time BETWEEN #{startTime} AND #{endTime} AND deleted = 0 ORDER BY recharge_time ASC")
-    List<RechargeOrder> selectSuccessOrdersBetween(@Param("startTime") LocalDateTime startTime, @Param("endTime") LocalDateTime endTime);
 }
