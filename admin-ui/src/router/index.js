@@ -18,6 +18,12 @@ const routes = [
         name: 'OrderList',
         component: () => import('@/views/RechargeOrder.vue'),
         meta: { title: '订单管理' }
+      },
+      {
+        path: 'recharge-consumption',
+        name: 'RechargeConsumption',
+        component: () => import('@/views/RechargeConsumption.vue'),
+        meta: { title: '预存款消耗明细' }
       }
 
     ]

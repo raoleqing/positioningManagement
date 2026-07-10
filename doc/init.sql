@@ -79,6 +79,34 @@ CREATE TABLE IF NOT EXISTS `package_plan` (
     KEY `idx_deleted` (`deleted`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='套餐管理表';
 
+-- 充值记录表 — 记录每一笔订单调用运营商扣费的明细
+CREATE TABLE IF NOT EXISTS `recharge_record` (
+    `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    `order_id` BIGINT NOT NULL COMMENT '关联订单ID',
+    `order_no` VARCHAR(32) NOT NULL COMMENT '订单号',
+    `device_id` BIGINT DEFAULT NULL COMMENT '设备ID',
+    `device_no` VARCHAR(64) DEFAULT NULL COMMENT '设备编号',
+    `iccid` VARCHAR(32) DEFAULT NULL COMMENT 'SIM卡ICCID',
+    `package_id` BIGINT DEFAULT NULL COMMENT '运营商套餐ID',
+    `plan_name` VARCHAR(100) DEFAULT NULL COMMENT '套餐名称',
+    `amount` DECIMAL(10,2) DEFAULT NULL COMMENT '扣费金额(元)',
+    `recharge_status` VARCHAR(20) NOT NULL COMMENT '充值状态: SUCCESS-扣费成功, FAILED-扣费失败, CALL_FAILED-接口调用异常',
+    `resp_code` VARCHAR(50) DEFAULT NULL COMMENT '运营商API返回的code',
+    `resp_msg` VARCHAR(500) DEFAULT NULL COMMENT '运营商API返回的msg',
+    `response_body` TEXT COMMENT '运营商API返回的完整响应体(JSON)',
+    `error_msg` VARCHAR(500) DEFAULT NULL COMMENT '失败原因/错误信息',
+    `recharge_time` DATETIME DEFAULT NULL COMMENT '扣费时间',
+    `create_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    `deleted` TINYINT NOT NULL DEFAULT 0 COMMENT '逻辑删除: 0-未删除, 1-已删除',
+    PRIMARY KEY (`id`),
+    KEY `idx_order_id` (`order_id`),
+    KEY `idx_order_no` (`order_no`),
+    KEY `idx_recharge_status` (`recharge_status`),
+    KEY `idx_create_time` (`create_time`),
+    KEY `idx_deleted` (`deleted`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='充值记录表';
+
 -- 注: 套餐操作日志已合并到通用 operation_log 表中(business_type='PACKAGE_PLAN')
 
 -- ============================================

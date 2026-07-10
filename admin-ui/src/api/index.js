@@ -59,4 +59,19 @@ export function retryAllOrders(operator) {
   return request({ url: '/order/retry-all', method: 'post', params: { operator } })
 }
 
+// ============ 预存款消耗明细（充值记录） ============
 
+/** 分页查询充值记录 */
+export function getRechargeRecordList(params) {
+  return request({ url: '/recharge-record/list', method: 'get', params })
+}
+
+/** 重试充值 */
+export function retryRechargeRecord(id, operator) {
+  return request({ url: `/recharge-record/${id}/retry`, method: 'post', params: { operator } })
+}
+
+/** 退款 */
+export function refundRechargeRecord(id, operator) {
+  return request({ url: `/recharge-record/${id}/refund`, method: 'post', params: { operator } })
+}

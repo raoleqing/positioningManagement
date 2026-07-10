@@ -5,6 +5,7 @@ import cn.hutool.http.HttpResponse;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.zns.positioning.positioningmanagement.config.IoTPlatformConfig;
+import com.zns.positioning.positioningmanagement.dto.OperatorApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -42,7 +43,14 @@ public class OperatorApiClient {
      * @param bizParams 业务参数（不含系统参数和签名）
      * @return 响应 JSON
      */
-    private JSONObject call(String apiMethod, Map<String, Object> bizParams) {
+    /**
+     * POST JSON 方式调用运营商接口
+     *
+     * @param apiMethod 接口方法名（如 queryCardStatus, orderCardPackage）
+     * @param bizParams 业务参数（不含系统参数和签名）
+     * @return 统一响应对象（code, msg, data）
+     */
+    private OperatorApiResponse<JSONObject> call(String apiMethod, Map<String, Object> bizParams) {
         // 1. 先构建不含 sign 的参数并签名
         Map<String, Object> params = buildParamsWithoutSign(bizParams);
         String sign = SignUtil.sign(toSignMap(params), iotConfig.getAppKey());
@@ -57,9 +65,9 @@ public class OperatorApiClient {
                 .header("Content-Type", "application/json;charset=UTF-8")
                 .body(JSONUtil.toJsonStr(params))
                 .execute()) {
-            String body = response.body();
-            log.info("运营商API响应 url={}, status={}, body={}", url, response.getStatus(), body);
-            return JSONUtil.parseObj(body);
+            String respBody = response.body();
+            log.info("运营商API响应 url={}, status={}, body={}", url, response.getStatus(), respBody);
+            return OperatorApiResponse.fromJson(respBody);
         } catch (Exception e) {
             log.error("运营商API调用异常 url={}, params={}", url, params, e);
             throw new RuntimeException("运营商接口调用失败: " + e.getMessage(), e);
@@ -102,9 +110,9 @@ public class OperatorApiClient {
      * 查询卡状态
      *
      * @param iccid SIM 卡 ICCID
-     * @return 响应 JSON
+     * @return 统一响应（code, msg, data）
      */
-    public JSONObject queryCardStatus(String iccid) {
+    public OperatorApiResponse<JSONObject> queryCardStatus(String iccid) {
         Map<String, Object> params = new HashMap<>();
         params.put("iccid", iccid);
         return call("queryCardStatus", params);
@@ -114,9 +122,9 @@ public class OperatorApiClient {
      * 查询卡流量
      *
      * @param iccid SIM 卡 ICCID
-     * @return 响应 JSON
+     * @return 统一响应（code, msg, data）
      */
-    public JSONObject queryCardTraffic(String iccid) {
+    public OperatorApiResponse<JSONObject> queryCardTraffic(String iccid) {
         Map<String, Object> params = new HashMap<>();
         params.put("iccid", iccid);
         return call("queryCardTraffic", params);
@@ -126,9 +134,9 @@ public class OperatorApiClient {
      * 查询卡套餐信息
      *
      * @param iccid SIM 卡 ICCID
-     * @return 响应 JSON
+     * @return 统一响应（code, msg, data）
      */
-    public JSONObject queryCardPackage(String iccid) {
+    public OperatorApiResponse<JSONObject> queryCardPackage(String iccid) {
         Map<String, Object> params = new HashMap<>();
         params.put("iccid", iccid);
         return call("queryCardPackage", params);
@@ -140,9 +148,9 @@ public class OperatorApiClient {
      * @param iccid       SIM 卡 ICCID
      * @param packageId   运营商套餐ID
      * @param orderAmount 订购金额（元）
-     * @return 响应 JSON
+     * @return 统一响应（code, msg, data）
      */
-    public JSONObject orderCardPackage(String iccid, String packageId, BigDecimal orderAmount) {
+    public OperatorApiResponse<JSONObject> orderCardPackage(String iccid, String packageId, BigDecimal orderAmount) {
         Map<String, Object> params = new HashMap<>();
         params.put("iccid", iccid);
         params.put("packageId", packageId);
@@ -156,9 +164,9 @@ public class OperatorApiClient {
      * @param iccid     SIM 卡 ICCID
      * @param packageId 运营商套餐ID
      * @param amount    充值金额
-     * @return 响应 JSON
+     * @return 统一响应（code, msg, data）
      */
-    public JSONObject recharge(String iccid, String packageId, BigDecimal amount) {
+    public OperatorApiResponse<JSONObject> recharge(String iccid, String packageId, BigDecimal amount) {
         return orderCardPackage(iccid, packageId, amount);
     }
 }

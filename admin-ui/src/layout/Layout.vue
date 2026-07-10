@@ -20,6 +20,10 @@
           <el-icon><Document /></el-icon>
           <span>订单管理</span>
         </el-menu-item>
+        <el-menu-item index="/recharge-consumption">
+          <el-icon><Money /></el-icon>
+          <span>预存款消耗明细</span>
+        </el-menu-item>
 
       </el-menu>
     </el-aside>
