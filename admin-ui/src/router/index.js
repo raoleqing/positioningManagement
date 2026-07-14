@@ -24,6 +24,30 @@ const routes = [
         name: 'RechargeConsumption',
         component: () => import('@/views/RechargeConsumption.vue'),
         meta: { title: '预存款消耗明细' }
+      },
+      {
+        path: 'reconciliation',
+        name: 'Reconciliation',
+        component: () => import('@/views/Reconciliation.vue'),
+        meta: { title: '对账管理' }
+      },
+      {
+        path: 'task-management',
+        name: 'TaskManagement',
+        component: () => import('@/views/TaskManagement.vue'),
+        meta: { title: '定时任务管理' }
+      },
+      {
+        path: 'alert-config',
+        name: 'AlertConfig',
+        component: () => import('@/views/AlertConfig.vue'),
+        meta: { title: '告警管理' }
+      },
+      {
+        path: 'operation-log',
+        name: 'OperationLog',
+        component: () => import('@/views/OperationLog.vue'),
+        meta: { title: '日志管理' }
       }
 
     ]

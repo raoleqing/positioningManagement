@@ -49,9 +49,6 @@
     <el-card class="table-card" shadow="never">
       <div class="toolbar">
         <span class="toolbar-title">订单列表</span>
-        <el-button type="warning" :icon="RefreshRight" @click="retryAll" :loading="retryAllLoading">
-          一键重试失败订单
-        </el-button>
       </div>
 
       <!-- 订单表格 -->
@@ -85,9 +82,8 @@
         <el-table-column prop="payTime" label="支付时间" width="160" show-overflow-tooltip />
         <el-table-column prop="rechargeTime" label="充值时间" width="160" show-overflow-tooltip />
         <el-table-column prop="retryCount" label="重试次数" width="80" />
-        <el-table-column label="操作" width="200" fixed="right">
+        <el-table-column label="操作" width="80" fixed="right">
           <template #default="{ row }">
-            <el-button type="primary" link @click="viewLogs(row)">日志</el-button>
             <el-button
               v-if="row.rechargeStatus === 'FAILED'"
               type="warning"
@@ -112,32 +108,14 @@
       </div>
     </el-card>
 
-    <!-- 订单日志对话框 -->
-    <el-dialog v-model="logDialogVisible" title="订单操作日志" width="800px" destroy-on-close>
-      <el-timeline v-if="logList.length">
-        <el-timeline-item
-          v-for="log in logList"
-          :key="log.id"
-          :timestamp="log.createTime"
-          :color="log.logLevel === 'ERROR' ? '#F56C6C' : '#409EFF'"
-        >
-          <div class="log-item">
-            <el-tag :type="log.logLevel === 'ERROR' ? 'danger' : ''" size="small">{{ log.title || log.logType }}</el-tag>
-            <span style="margin-left: 8px; color: #909399;">[{{ log.operator }}]</span>
-          </div>
-          <div class="log-content">{{ log.content }}</div>
-        </el-timeline-item>
-      </el-timeline>
-      <el-empty v-else description="暂无日志记录" />
-    </el-dialog>
+
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { RefreshRight } from '@element-plus/icons-vue'
-import { getOrderList, getOrderLogs, retryOrder, retryAllOrders } from '@/api'
+import { getOrderList, retryOrder } from '@/api'
 
 const queryForm = reactive({
   orderNo: '',
@@ -154,11 +132,6 @@ const dateRange = ref([])
 const tableData = ref([])
 const total = ref(0)
 const loading = ref(false)
-const retryAllLoading = ref(false)
-
-// 日志弹窗
-const logDialogVisible = ref(false)
-const logList = ref([])
 
 // 支付状态映射
 const payStatusMap = { PENDING: '待支付', PAID: '已支付', PAY_FAILED: '支付失败', REFUNDED: '已退款' }
@@ -218,32 +191,6 @@ async function retrySingle(row) {
   }
 }
 
-// 一键重试
-async function retryAll() {
-  try {
-    await ElMessageBox.confirm('确认重试所有失败订单？', '提示', { type: 'warning' })
-  } catch { return }
-  retryAllLoading.value = true
-  try {
-    const res = await retryAllOrders('admin')
-    ElMessage.success(`已触发重试，成功处理 ${res.data} 条`)
-    search()
-  } finally {
-    retryAllLoading.value = false
-  }
-}
-
-// 查看日志
-async function viewLogs(row) {
-  logDialogVisible.value = true
-  try {
-    const res = await getOrderLogs(row.id)
-    logList.value = res.data || []
-  } catch {
-    logList.value = []
-  }
-}
-
 onMounted(() => search())
 </script>
 
@@ -273,13 +220,5 @@ onMounted(() => search())
   display: flex;
   justify-content: flex-end;
   margin-top: 16px;
-}
-.log-item {
-  display: flex;
-  align-items: center;
-}
-.log-content {
-  margin-top: 4px;
-  color: #606266;
 }
 </style>

@@ -15,12 +15,26 @@ spring:
       port: 6379
       password: 'nocache'
       database: 1
+      timeout: 60s
       lettuce:
         pool:
           max-active: 8
           max-idle: 8
           min-idle: 0
           max-wait: -1ms
+
+  # 邮件配置（生产环境）
+  mail:
+    host: ${MAIL_HOST:smtp.example.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
 # MyBatis Plus 配置
 mybatis-plus:

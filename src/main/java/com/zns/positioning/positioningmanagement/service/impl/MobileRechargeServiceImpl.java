@@ -23,6 +23,7 @@ import com.zns.positioning.positioningmanagement.dto.CreateOrderDTO;
 import com.zns.positioning.positioningmanagement.dto.MobileOrderQueryDTO;
 import com.zns.positioning.positioningmanagement.dto.OperatorApiResponse;
 import com.zns.positioning.positioningmanagement.entity.*;
+import com.zns.positioning.positioningmanagement.entity.operator.CardPackage;
 import com.zns.positioning.positioningmanagement.entity.operator.CardPackageResp;
 import com.zns.positioning.positioningmanagement.mapper.*;
 import com.zns.positioning.positioningmanagement.service.MobileRechargeService;
@@ -87,7 +88,6 @@ public class MobileRechargeServiceImpl implements MobileRechargeService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public MobileOrderDetailVO createOrder(CreateOrderDTO dto) {
-
         // 1. 查询当前号码是否可用
         OperatorApiResponse<JSONObject> cardStatusResp = operatorApiClient.queryCardStatus(dto.getIccid());
         if (cardStatusResp.isFail()) {
@@ -374,17 +374,17 @@ public class MobileRechargeServiceImpl implements MobileRechargeService {
         }
 
         CardPackageResp resp = queryCardPackageResp.getData().toBean(CardPackageResp.class);
-        //{"msg":"success","code":0,
-        // "data":{"
-        // basicsePackage":[],
-        // "speedPackage":[],
-        // "protectPackage":[
-        // {"price":0.80,"cycleCategory":1,"packageId":2974,"packageName":"停机保号套餐 （1个月）","cycle":30,"flow":0},
-        // {"price":1.00,"cycleCategory":1,"packageId":2975,"packageName":"停机保号套餐 （2个月）","cycle":60,"flow":0},
-        // {"price":1.80,"cycleCategory":1,"packageId":2976,"packageName":"停机保号套餐 （3个月）","cycle":90,"flow":0},
-        // {"price":3.00,"cycleCategory":1,"packageId":13851,"packageName":"停机保号套餐(六个月)","cycle":180,"flow":0}]}}
+        List<CardPackage> packageList = resp.getBasicsePackage();
+        if(packageList.isEmpty()){
+            log.error("请管理后台，没有配置基础套餐");
+            throw new RuntimeException("请管理后台，没有配置基础套餐");
+        }
 
-
+        CardPackage cardpackage = getCardPackage(packageList, order.getPlanYears());
+        if(cardpackage == null){
+            log.error("请管理后台，没有配置套餐");
+            throw new RuntimeException("请管理后台，没有配置套餐");
+        }
 
         operationLogService.saveLog(OperationLogTypeEnum.ORDER_RECHARGE_CALL,
                 order.getId(), order.getOrderNo(), order.getDeviceNo(),
@@ -394,7 +394,7 @@ public class MobileRechargeServiceImpl implements MobileRechargeService {
         try {
             // 使用卡商API进行真实充值
             OperatorApiResponse<JSONObject> rechargeResp = operatorApiClient.recharge(order.getIccid(),
-                    String.valueOf(order.getPlanId()), order.getPlanAmount());
+                    cardpackage.getPackageId(), cardpackage.getPrice());
 
             String responseBody = JSONUtil.toJsonStr(rechargeResp);
 
@@ -448,6 +448,21 @@ public class MobileRechargeServiceImpl implements MobileRechargeService {
                     order.getId(), order.getOrderNo(), order.getDeviceNo(),
                     "ERROR", "充值异常", e.getMessage(), "SYSTEM");
         }
+    }
+
+    /**
+     * 获取指定套餐
+     */
+    private CardPackage getCardPackage(List<CardPackage> packageList, Integer planYears) {
+        for (CardPackage cardPackage : packageList) {
+            // planYears 是年， cycle 是日，
+            if(planYears == 1){
+                if (cardPackage.getCycle()  == 360) {
+                    return cardPackage;
+                }
+            }
+        }
+        return null;
     }
 
     @Override

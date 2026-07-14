@@ -24,6 +24,22 @@
           <el-icon><Money /></el-icon>
           <span>预存款消耗明细</span>
         </el-menu-item>
+        <el-menu-item index="/reconciliation">
+          <el-icon><Finished /></el-icon>
+          <span>对账管理</span>
+        </el-menu-item>
+        <el-menu-item index="/task-management">
+          <el-icon><Timer /></el-icon>
+          <span>定时任务管理</span>
+        </el-menu-item>
+        <el-menu-item index="/alert-config">
+          <el-icon><Bell /></el-icon>
+          <span>告警管理</span>
+        </el-menu-item>
+        <el-menu-item index="/operation-log">
+          <el-icon><Notebook /></el-icon>
+          <span>日志管理</span>
+        </el-menu-item>
 
       </el-menu>
     </el-aside>

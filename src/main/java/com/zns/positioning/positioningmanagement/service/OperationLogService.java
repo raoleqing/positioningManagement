@@ -1,8 +1,10 @@
 package com.zns.positioning.positioningmanagement.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zns.positioning.positioningmanagement.common.enums.OperationLogTypeEnum;
 import com.zns.positioning.positioningmanagement.vo.OperationLogVO;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -34,4 +36,27 @@ public interface OperationLogService {
      * @return 日志列表（按时间倒序）
      */
     List<OperationLogVO> getLogs(String businessType, Long businessId);
+
+    /**
+     * 分页查询操作日志（支持多条件筛选）
+     *
+     * @param page         分页参数
+     * @param businessNo   业务编号（订单号等），模糊搜索
+     * @param businessType 业务类型，可选
+     * @param logLevel     日志级别，可选
+     * @param startTime    开始时间，可选
+     * @param endTime      结束时间，可选
+     * @return 分页结果
+     */
+    Page<OperationLogVO> queryPage(Page<OperationLogVO> page, String businessNo,
+                                   String businessType, String logLevel,
+                                   LocalDateTime startTime, LocalDateTime endTime);
+
+    /**
+     * 根据业务编号（订单号）查询完整操作链路
+     *
+     * @param businessNo 业务编号（订单号）
+     * @return 日志列表（按时间升序，展示全链路）
+     */
+    List<OperationLogVO> queryByBusinessNo(String businessNo);
 }

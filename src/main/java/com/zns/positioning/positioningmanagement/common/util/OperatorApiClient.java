@@ -150,7 +150,7 @@ public class OperatorApiClient {
      * @param orderAmount 订购金额（元）
      * @return 统一响应（code, msg, data）
      */
-    public OperatorApiResponse<JSONObject> orderCardPackage(String iccid, String packageId, BigDecimal orderAmount) {
+    public OperatorApiResponse<JSONObject> orderCardPackage(String iccid, Integer packageId, BigDecimal orderAmount) {
         Map<String, Object> params = new HashMap<>();
         params.put("iccid", iccid);
         params.put("packageId", packageId);
@@ -166,7 +166,7 @@ public class OperatorApiClient {
      * @param amount    充值金额
      * @return 统一响应（code, msg, data）
      */
-    public OperatorApiResponse<JSONObject> recharge(String iccid, String packageId, BigDecimal amount) {
+    public OperatorApiResponse<JSONObject> recharge(String iccid, Integer packageId, BigDecimal amount) {
         return orderCardPackage(iccid, packageId, amount);
     }
 }
