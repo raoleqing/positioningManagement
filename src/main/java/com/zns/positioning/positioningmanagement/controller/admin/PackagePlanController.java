@@ -16,7 +16,7 @@ import java.util.List;
  * 套餐管理 Controller
  */
 @RestController
-@RequestMapping("/package-plan")
+@RequestMapping("/admin/package-plan")
 @RequiredArgsConstructor
 public class PackagePlanController {
 

@@ -12,7 +12,7 @@ import java.util.List;
  * 告警配置管理接口
  */
 @RestController
-@RequestMapping("/api/admin/alert-config")
+@RequestMapping("/admin/alert-config")
 public class AlertConfigController {
 
     @Resource

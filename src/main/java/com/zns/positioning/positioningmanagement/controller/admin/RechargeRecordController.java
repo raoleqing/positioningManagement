@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
  * 预存款消耗明细（充值记录）
  */
 @RestController
-@RequestMapping("/recharge-record")
+@RequestMapping("/admin/recharge-record")
 @RequiredArgsConstructor
 public class RechargeRecordController {
 

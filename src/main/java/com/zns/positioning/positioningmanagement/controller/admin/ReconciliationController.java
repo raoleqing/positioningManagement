@@ -14,7 +14,7 @@ import java.time.LocalDate;
  * 每日流水管理 — 后台接口（用于流水确认/对账）
  */
 @RestController
-@RequestMapping("/api/admin/daily-flow")
+@RequestMapping("/admin/daily-flow")
 public class ReconciliationController {
 
     @Resource
