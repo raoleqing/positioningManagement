@@ -72,10 +72,10 @@ wechat:
     mock: true
     # 以下为真实环境配置（mock=false 时需填写）
     app-id: wxc249d9bd4038838b
-    mch-id: "0000000000"
-    mch-serial-no: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-    api-v3-key: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-    private-key-path: /path/to/apiclient_key.pem
+    mch-id: "1748241775"
+    mch-serial-no: "4CF49A6DE5E531AB08A0DAB9DB69D1A4ACBD1277"
+    api-v3-key: "KiHxewhciQkn9sLYkV8pfxEDY4d5jPQa"
+    private-key-path: doc/1748241775_20260717_cert/apiclient_key.pem
     notify-url: http://localhost:8010/api/mobile/pay/callback
 
 logging:

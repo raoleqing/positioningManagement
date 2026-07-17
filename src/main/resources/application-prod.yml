@@ -71,10 +71,10 @@ wechat:
     # 生产环境默认模拟模式，真实支付时改为 false 并填写下方配置
     mock: true
     app-id: ${WECHAT_APP_ID:wxc249d9bd4038838b}
-    mch-id: ${WECHAT_MCH_ID:0000000000}
-    mch-serial-no: ${WECHAT_MCH_SERIAL_NO:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX}
-    api-v3-key: ${WECHAT_API_V3_KEY:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX}
-    private-key-path: ${WECHAT_PRIVATE_KEY_PATH:/path/to/apiclient_key.pem}
+    mch-id: ${WECHAT_MCH_ID:1748241775}
+    mch-serial-no: ${WECHAT_MCH_SERIAL_NO:4CF49A6DE5E531AB08A0DAB9DB69D1A4ACBD1277}
+    api-v3-key: ${WECHAT_API_V3_KEY:KiHxewhciQkn9sLYkV8pfxEDY4d5jPQa}
+    private-key-path: ${WECHAT_PRIVATE_KEY_PATH:/opt/new-service/key/apiclient_key.pem}
     notify-url: ${WECHAT_NOTIFY_URL:http://47.94.183.144:8082/api/mobile/pay/callback}
 
 logging:

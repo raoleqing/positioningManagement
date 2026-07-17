@@ -42,3 +42,69 @@
 2026-07-17T09:30:00.033+08:00  INFO 19564 --- [positioningManagement] [scheduling-1] c.z.p.p.task.AlertTask                   : ========== 告警定时任务结束 ==========
 2026-07-17T09:35:00.011+08:00  INFO 19564 --- [positioningManagement] [scheduling-1] c.z.p.p.task.AlertTask                   : ========== 告警定时任务开始 ==========
 2026-07-17T09:35:00.027+08:00  INFO 19564 --- [positioningManagement] [scheduling-1] c.z.p.p.task.AlertTask                   : ========== 告警定时任务结束 ==========
+2026-07-17T09:40:00.003+08:00  INFO 19564 --- [positioningManagement] [scheduling-1] c.z.p.p.task.AlertTask                   : ========== 告警定时任务开始 ==========
+2026-07-17T09:40:00.020+08:00  INFO 19564 --- [positioningManagement] [scheduling-1] c.z.p.p.task.AlertTask                   : ========== 告警定时任务结束 ==========
+2026-07-17T09:45:00.007+08:00  INFO 19564 --- [positioningManagement] [scheduling-1] c.z.p.p.task.AlertTask                   : ========== 告警定时任务开始 ==========
+2026-07-17T09:45:00.021+08:00  INFO 19564 --- [positioningManagement] [scheduling-1] c.z.p.p.task.AlertTask                   : ========== 告警定时任务结束 ==========
+2026-07-17T09:49:59.999+08:00  INFO 19564 --- [positioningManagement] [scheduling-1] c.z.p.p.task.AlertTask                   : ========== 告警定时任务开始 ==========
+2026-07-17T09:50:00.006+08:00  INFO 19564 --- [positioningManagement] [scheduling-1] c.z.p.p.task.AlertTask                   : ========== 告警定时任务结束 ==========
+2026-07-17T09:55:00.005+08:00  INFO 19564 --- [positioningManagement] [scheduling-1] c.z.p.p.task.AlertTask                   : ========== 告警定时任务开始 ==========
+2026-07-17T09:55:00.019+08:00  INFO 19564 --- [positioningManagement] [scheduling-1] c.z.p.p.task.AlertTask                   : ========== 告警定时任务结束 ==========
+2026-07-17T10:00:00.001+08:00  INFO 19564 --- [positioningManagement] [scheduling-1] c.z.p.p.task.AlertTask                   : ========== 告警定时任务开始 ==========
+2026-07-17T10:00:00.016+08:00  INFO 19564 --- [positioningManagement] [scheduling-1] c.z.p.p.task.AlertTask                   : ========== 告警定时任务结束 ==========
+2026-07-17T10:05:00.012+08:00  INFO 19564 --- [positioningManagement] [scheduling-1] c.z.p.p.task.AlertTask                   : ========== 告警定时任务开始 ==========
+2026-07-17T10:05:00.027+08:00  INFO 19564 --- [positioningManagement] [scheduling-1] c.z.p.p.task.AlertTask                   : ========== 告警定时任务结束 ==========
+2026-07-17T10:10:00.013+08:00  INFO 19564 --- [positioningManagement] [scheduling-1] c.z.p.p.task.AlertTask                   : ========== 告警定时任务开始 ==========
+2026-07-17T10:10:00.025+08:00  INFO 19564 --- [positioningManagement] [scheduling-1] c.z.p.p.task.AlertTask                   : ========== 告警定时任务结束 ==========
+2026-07-17T10:15:00.003+08:00  INFO 19564 --- [positioningManagement] [scheduling-1] c.z.p.p.task.AlertTask                   : ========== 告警定时任务开始 ==========
+2026-07-17T10:15:00.019+08:00  INFO 19564 --- [positioningManagement] [scheduling-1] c.z.p.p.task.AlertTask                   : ========== 告警定时任务结束 ==========
+2026-07-17T10:20:00.005+08:00  INFO 19564 --- [positioningManagement] [scheduling-1] c.z.p.p.task.AlertTask                   : ========== 告警定时任务开始 ==========
+2026-07-17T10:20:00.019+08:00  INFO 19564 --- [positioningManagement] [scheduling-1] c.z.p.p.task.AlertTask                   : ========== 告警定时任务结束 ==========
+2026-07-17T10:24:59.999+08:00  INFO 19564 --- [positioningManagement] [scheduling-1] c.z.p.p.task.AlertTask                   : ========== 告警定时任务开始 ==========
+2026-07-17T10:25:00.011+08:00  INFO 19564 --- [positioningManagement] [scheduling-1] c.z.p.p.task.AlertTask                   : ========== 告警定时任务结束 ==========
+2026-07-17T10:30:00.007+08:00  INFO 19564 --- [positioningManagement] [scheduling-1] c.z.p.p.task.AlertTask                   : ========== 告警定时任务开始 ==========
+2026-07-17T10:30:00.021+08:00  INFO 19564 --- [positioningManagement] [scheduling-1] c.z.p.p.task.AlertTask                   : ========== 告警定时任务结束 ==========
+2026-07-17T10:35:00.012+08:00  INFO 19564 --- [positioningManagement] [scheduling-1] c.z.p.p.task.AlertTask                   : ========== 告警定时任务开始 ==========
+2026-07-17T10:35:00.026+08:00  INFO 19564 --- [positioningManagement] [scheduling-1] c.z.p.p.task.AlertTask                   : ========== 告警定时任务结束 ==========
+2026-07-17T10:40:00.002+08:00  INFO 19564 --- [positioningManagement] [scheduling-1] c.z.p.p.task.AlertTask                   : ========== 告警定时任务开始 ==========
+2026-07-17T10:40:00.019+08:00  INFO 19564 --- [positioningManagement] [scheduling-1] c.z.p.p.task.AlertTask                   : ========== 告警定时任务结束 ==========
+2026-07-17T10:45:00.011+08:00  INFO 19564 --- [positioningManagement] [scheduling-1] c.z.p.p.task.AlertTask                   : ========== 告警定时任务开始 ==========
+2026-07-17T10:45:00.024+08:00  INFO 19564 --- [positioningManagement] [scheduling-1] c.z.p.p.task.AlertTask                   : ========== 告警定时任务结束 ==========
+2026-07-17T10:50:00.008+08:00  INFO 19564 --- [positioningManagement] [scheduling-1] c.z.p.p.task.AlertTask                   : ========== 告警定时任务开始 ==========
+2026-07-17T10:50:00.021+08:00  INFO 19564 --- [positioningManagement] [scheduling-1] c.z.p.p.task.AlertTask                   : ========== 告警定时任务结束 ==========
+2026-07-17T10:55:00.003+08:00  INFO 19564 --- [positioningManagement] [scheduling-1] c.z.p.p.task.AlertTask                   : ========== 告警定时任务开始 ==========
+2026-07-17T10:55:00.019+08:00  INFO 19564 --- [positioningManagement] [scheduling-1] c.z.p.p.task.AlertTask                   : ========== 告警定时任务结束 ==========
+2026-07-17T11:00:00.001+08:00  INFO 19564 --- [positioningManagement] [scheduling-1] c.z.p.p.task.AlertTask                   : ========== 告警定时任务开始 ==========
+2026-07-17T11:00:00.016+08:00  INFO 19564 --- [positioningManagement] [scheduling-1] c.z.p.p.task.AlertTask                   : ========== 告警定时任务结束 ==========
+2026-07-17T11:05:00.013+08:00  INFO 19564 --- [positioningManagement] [scheduling-1] c.z.p.p.task.AlertTask                   : ========== 告警定时任务开始 ==========
+2026-07-17T11:05:00.032+08:00  INFO 19564 --- [positioningManagement] [scheduling-1] c.z.p.p.task.AlertTask                   : ========== 告警定时任务结束 ==========
+2026-07-17T11:10:00.004+08:00  INFO 19564 --- [positioningManagement] [scheduling-1] c.z.p.p.task.AlertTask                   : ========== 告警定时任务开始 ==========
+2026-07-17T11:10:00.018+08:00  INFO 19564 --- [positioningManagement] [scheduling-1] c.z.p.p.task.AlertTask                   : ========== 告警定时任务结束 ==========
+2026-07-17T11:13:17.341+08:00  INFO 20144 --- [positioningManagement] [main] .p.PositioningManagementApplicationTests : Starting PositioningManagementApplicationTests using Java 17.0.14 with PID 20144 (started by SY100836 in D:\javaProject\positioningManagement)
+2026-07-17T11:13:17.342+08:00 DEBUG 20144 --- [positioningManagement] [main] .p.PositioningManagementApplicationTests : Running with Spring Boot v3.5.16, Spring v6.2.19
+2026-07-17T11:13:17.342+08:00  INFO 20144 --- [positioningManagement] [main] .p.PositioningManagementApplicationTests : The following 1 profile is active: "dev"
+2026-07-17T11:13:18.127+08:00  INFO 20144 --- [positioningManagement] [main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2026-07-17T11:13:18.130+08:00  INFO 20144 --- [positioningManagement] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2026-07-17T11:13:18.176+08:00  INFO 20144 --- [positioningManagement] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 32 ms. Found 0 Redis repository interfaces.
+2026-07-17T11:13:18.639+08:00  WARN 20144 --- [positioningManagement] [main] trationDelegate$BeanPostProcessorChecker : Bean 'spring.datasource.dynamic-com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceProperties' of type [com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceProperties] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [projectingArgumentResolverBeanPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+2026-07-17T11:13:18.640+08:00  WARN 20144 --- [positioningManagement] [main] trationDelegate$BeanPostProcessorChecker : Bean 'com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceAopConfiguration' of type [com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceAopConfiguration$$SpringCGLIB$$0] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [projectingArgumentResolverBeanPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+2026-07-17T11:13:18.649+08:00  WARN 20144 --- [positioningManagement] [main] trationDelegate$BeanPostProcessorChecker : Bean 'dsProcessor' of type [com.baomidou.dynamic.datasource.processor.DsJakartaHeaderProcessor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [projectingArgumentResolverBeanPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+2026-07-17T11:13:19.540+08:00  INFO 20144 --- [positioningManagement] [main] com.zaxxer.hikari.HikariDataSource       : master - Starting...
+2026-07-17T11:13:19.859+08:00  INFO 20144 --- [positioningManagement] [main] com.zaxxer.hikari.pool.HikariPool        : master - Added connection com.mysql.cj.jdbc.ConnectionImpl@351ede23
+2026-07-17T11:13:19.863+08:00  INFO 20144 --- [positioningManagement] [main] com.zaxxer.hikari.HikariDataSource       : master - Start completed.
+2026-07-17T11:13:19.866+08:00  INFO 20144 --- [positioningManagement] [main] com.zaxxer.hikari.HikariDataSource       : slave - Starting...
+2026-07-17T11:13:20.997+08:00  INFO 20144 --- [positioningManagement] [main] com.zaxxer.hikari.pool.HikariPool        : slave - Added connection com.mysql.cj.jdbc.ConnectionImpl@510e4d79
+2026-07-17T11:13:20.998+08:00  INFO 20144 --- [positioningManagement] [main] com.zaxxer.hikari.HikariDataSource       : slave - Start completed.
+2026-07-17T11:13:20.998+08:00  INFO 20144 --- [positioningManagement] [main] c.b.d.d.DynamicRoutingDataSource         : dynamic-datasource - add a datasource named [slave] success
+2026-07-17T11:13:20.998+08:00  INFO 20144 --- [positioningManagement] [main] c.b.d.d.DynamicRoutingDataSource         : dynamic-datasource - add a datasource named [master] success
+2026-07-17T11:13:20.998+08:00  INFO 20144 --- [positioningManagement] [main] c.b.d.d.DynamicRoutingDataSource         : dynamic-datasource initial loaded [2] datasource,primary datasource named [master]
+2026-07-17T11:13:21.929+08:00  WARN 20144 --- [positioningManagement] [main] c.b.m.core.injector.DefaultSqlInjector   : class com.zns.positioning.positioningmanagement.entity.GpsDeviceAdditional ,Not found @TableId annotation, Cannot use Mybatis-Plus 'xxById' Method.
+2026-07-17T11:13:23.027+08:00  INFO 20144 --- [positioningManagement] [main] .p.PositioningManagementApplicationTests : Started PositioningManagementApplicationTests in 5.993 seconds (process running for 6.776)
+2026-07-17T11:13:24.201+08:00  INFO 20144 --- [positioningManagement] [SpringApplicationShutdownHook] c.b.d.d.DynamicRoutingDataSource         : dynamic-datasource start closing ....
+2026-07-17T11:13:24.203+08:00  INFO 20144 --- [positioningManagement] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : slave - Shutdown initiated...
+2026-07-17T11:13:24.742+08:00  INFO 20144 --- [positioningManagement] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : slave - Shutdown completed.
+2026-07-17T11:13:24.743+08:00  INFO 20144 --- [positioningManagement] [SpringApplicationShutdownHook] c.b.d.d.d.DefaultDataSourceDestroyer     : dynamic-datasource close the datasource named [slave] success,
+2026-07-17T11:13:24.745+08:00  INFO 20144 --- [positioningManagement] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : master - Shutdown initiated...
+2026-07-17T11:13:24.761+08:00  INFO 20144 --- [positioningManagement] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : master - Shutdown completed.
+2026-07-17T11:13:24.761+08:00  INFO 20144 --- [positioningManagement] [SpringApplicationShutdownHook] c.b.d.d.d.DefaultDataSourceDestroyer     : dynamic-datasource close the datasource named [master] success,
+2026-07-17T11:13:24.762+08:00  INFO 20144 --- [positioningManagement] [SpringApplicationShutdownHook] c.b.d.d.DynamicRoutingDataSource         : dynamic-datasource all closed success,bye
